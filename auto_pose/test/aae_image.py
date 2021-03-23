@@ -1,5 +1,5 @@
 import cv2
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 import glob
 import os
@@ -9,7 +9,7 @@ import configparser
 
 from auto_pose.ae import factory, utils
 
-
+tf.disable_eager_execution()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("experiment_name")

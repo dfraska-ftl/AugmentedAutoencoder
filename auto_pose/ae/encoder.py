@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 
 from .utils import lazy_property
@@ -42,13 +42,13 @@ class Encoder(object):
                 kernel_size=self._kernel_size,
                 strides=stride,
                 padding=padding,
-                kernel_initializer=tf.contrib.layers.xavier_initializer_conv2d(),
+                kernel_initializer=tf.initializers.glorot_normal(),
                 activation=tf.nn.relu
             )
             if self._batch_normalization:
                 x = tf.layers.batch_normalization(x, training=self._is_training)
 
-        encoder_out = tf.contrib.layers.flatten(x)
+        encoder_out = tf.layers.flatten(x)
         
         return encoder_out
 
@@ -60,7 +60,7 @@ class Encoder(object):
             x,
             self._latent_space_size,   
             activation=None,
-            kernel_initializer=tf.contrib.layers.xavier_initializer()
+            kernel_initializer=tf.initializers.glorot_uniform()
         )
 
         return z
@@ -87,10 +87,10 @@ class Encoder(object):
 
     @lazy_property
     def kl_div_loss(self):
-        p_z = tf.contrib.distributions.Normal(
+        p_z = tf.distributions.Normal(
             np.zeros(self._latent_space_size, dtype=np.float32), 
             np.ones(self._latent_space_size, dtype=np.float32))
-        q_z = tf.contrib.distributions.Normal(self.z, self.q_sigma)
+        q_z = tf.distributions.Normal(self.z, self.q_sigma)
 
         return tf.reduce_mean(tf.distributions.kl_divergence(q_z,p_z))
 

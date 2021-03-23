@@ -5,12 +5,14 @@ import argparse
 import numpy as np
 import signal
 import progressbar
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 from auto_pose.ae import ae_factory as factory
 from auto_pose.ae import utils as u
 
 def main():
+    tf.disable_eager_execution()
+    
     workspace_path = os.environ.get('AE_WORKSPACE_PATH')
 
     if workspace_path == None:

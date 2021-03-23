@@ -79,11 +79,12 @@ def build_ae(encoder, decoder, args):
 def build_train_op(ae, args):
     LEARNING_RATE = args.getfloat('Training', 'LEARNING_RATE')
     OPTIMIZER_NAME = args.get('Training', 'OPTIMIZER')
-    import tensorflow
-    optimizer = eval('tensorflow.train.{}Optimizer'.format(OPTIMIZER_NAME))
+    import tf_agents
+    import tensorflow.compat.v1 as tf
+    optimizer = eval(f'tf.train.{OPTIMIZER_NAME}Optimizer')
     optim = optimizer(LEARNING_RATE)
 
-    train_op = tensorflow.contrib.training.create_train_op(ae.loss, optim, global_step=ae.global_step)
+    train_op = tf_agents.utils.eager_utils.create_train_op(ae.loss, optim, global_step=ae.global_step)
 
     return train_op
 
@@ -103,7 +104,7 @@ def build_codebook_from_name(experiment_name, experiment_group='', return_datase
         exit(-1)
 
     from . import utils as u
-    import tensorflow as tf
+    import tensorflow.compat.v1 as tf
 
     log_dir = u.get_log_dir(workspace_path, experiment_name, experiment_group)
     checkpoint_file = u.get_checkpoint_basefilename(log_dir)

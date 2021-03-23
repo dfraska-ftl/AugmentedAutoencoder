@@ -2,7 +2,7 @@
 
 import threading
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 from auto_pose.ae.utils import lazy_property
 import time
