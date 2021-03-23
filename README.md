@@ -31,9 +31,9 @@ We propose a real-time RGB-based pipeline for object detection and 6D pose estim
 <img src='docs/pipeline_with_scene_vertical_ext.jpeg' width='600'>
 <p>
 
-1.) Train the Augmented Autoencoder(s) using only a 3D model to predict 3D Object Orientations from RGB image crops \
-2.) For full RGB-based 6D pose estimation, also train a 2D Object Detector (e.g. https://github.com/fizyr/keras-retinanet) \
-3.) Optionally, use our standard depth-based ICP to refine the 6D Pose
+1) Train the Augmented Autoencoder(s) using only a 3D model to predict 3D Object Orientations from RGB image crops
+2) For full RGB-based 6D pose estimation, also train a 2D Object Detector (e.g. https://github.com/fizyr/keras-retinanet)
+3) Optionally, use our standard depth-based ICP to refine the 6D Pose
 
 ## Requirements: Hardware
 ### For Training
@@ -59,38 +59,37 @@ sudo apt-get install libassimp-dev
 
 ### Windows
 #### GLFW
-*Download from https://www.glfw.org/*
+1) Download from https://www.glfw.org/  
 Tested with Version 3.3.3 (https://github.com/glfw/glfw/releases/download/3.3.3/glfw-3.3.3.zip)
-
-*1. Unzip to a permanent location*
-*2. Set the GLFW_ROOT environment variable to the location where it was unzipped*
-*3. Install the pip package*
+2) Unzip to a permanent location  
+3) Set the GLFW_ROOT environment variable to the location where it was unzipped  
+4) Install the pip package  
    ```cmd
    pip install --user cyglfw3
    ```
-*4. Copy the file glfw3.dll from lib-vc2012 into the Python Lib\site-packages\cyglfw3 where cyglfw is installed.*
-*5. Add the lib-vc2012 directory to the PATH environment variable*
+5) Copy the file glfw3.dll from lib-vc2012 into the Python Lib\site-packages\cyglfw3 where cyglfw is installed.  
+6) Add the lib-vc2012 directory to the PATH environment variable
 
 #### Assimp
-*Install from: https://github.com/assimp/assimp/releases/tag/v4.1.0/*
-*Add the <Program Files>\Assimp\bin\x64 directory to the PATH environment variable*
+1) Download & Install the package from https://github.com/assimp/assimp/releases/tag/v4.1.0/  
+2) Add the <Program Files>\Assimp\bin\x64 directory to the PATH environment variable  
 
 **Continued in the the All Platforms section below.**
 
 ### All Platforms
 
 #### OpenCV >= 3.1
-    See https://pypi.org/project/opencv-python/ for GPU acceleration instructions.   
-    To install the CPU-only version:
+1) See https://pypi.org/project/opencv-python/ for GPU acceleration instructions.  
+To install the CPU-only version:  
 ```bash
 pip install --user opencv-python
 ```
-*Latest versions of dependencies:*
+2a) Latest versions of dependencies:  
 ```bash
 pip install --user --pre --upgrade PyOpenGL PyOpenGL_accelerate
 pip install --user tensorflow cython cyglfw3 pyassimp==3.3 imgaug progressbar
 ```
-*Exact versions of dependencies:*
+2b) Exact versions of dependencies:
 ```bash
 pip install --user tensorflow==2.4.1 PyOpenGL==3.1.5 PyOpenGL_accelerate==3.1.5 cython==0.29.19 cyglfw3==3.1.0.2 pyassimp==3.3 imgaug==0.4.0 progressbar==2.5
 ```
@@ -104,17 +103,17 @@ In order to make the EGL context work, you might need to change PyOpenGL like [h
 
 ## Preparatory Steps
 
-*1. Pip installation*
+1) Pip installation
 ```bash
 pip install --user .
 ```
 
-*2. Set Workspace path, consider to put this into your bash profile, will always be required*
+2) Set Workspace path, consider to put this into your bash profile, will always be required
 ```bash
 export AE_WORKSPACE_PATH=/path/to/autoencoder_ws  
 ```
 
-*3. Create Workspace, Init Workspace (if installed locally, make sure .local/bin/ is in your PATH)*
+3) Create Workspace, Init Workspace (if installed locally, make sure .local/bin/ is in your PATH)
 ```bash
 mkdir $AE_WORKSPACE_PATH
 cd $AE_WORKSPACE_PATH
@@ -123,14 +122,14 @@ ae_init_workspace
 
 ## Train an Augmented Autoencoder
 
-*1. Create the training config file. Insert the paths to your 3D model and background images.*
+1) Create the training config file. Insert the paths to your 3D model and background images.
 ```bash
 mkdir $AE_WORKSPACE_PATH/cfg/exp_group
 cp $AE_WORKSPACE_PATH/cfg/train_template.cfg $AE_WORKSPACE_PATH/cfg/exp_group/my_autoencoder.cfg
 gedit $AE_WORKSPACE_PATH/cfg/exp_group/my_autoencoder.cfg
 ```
 
-*2. Generate and check training data. The object views should be strongly augmented but identifiable.*
+2) Generate and check training data. The object views should be strongly augmented but identifiable.
 
 (Press *ESC* to close the window.)
 ```bash
@@ -141,7 +140,7 @@ This command does not start training and should be run on a PC with a display co
 Output:
 ![](docs/training_images_29999.png)
 
-*3. Train the model*
+3) Train the model
 (See the [Headless Rendering](#headless-rendering) section if you want to train directly on a server without display)
 
 ```bash
@@ -153,7 +152,7 @@ $AE_WORKSPACE_PATH/experiments/exp_group/my_autoencoder/train_figures/training_i
 ```
 Middle part should show reconstructions of the input object (if all black, set higher bootstrap_ratio / auxilliary_mask in training config)  
 
-*4. Create the embedding*
+4) Create the embedding
 ```bash
 ae_embed exp_group/my_autoencoder
 ```
