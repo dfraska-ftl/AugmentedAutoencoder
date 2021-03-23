@@ -43,27 +43,56 @@ Duration depending on Configuration and Hardware: ~3h per Object
 
 ## Requirements: Software
 
-Linux, Python 2.7 / Python 3 (experimental)
+Python 3.6+
 
-GLFW for OpenGL: 
+### Linux
+#### GLFW
 ```bash
 sudo apt-get install libglfw3-dev libglfw3  
 ```
-Assimp: 
+
+#### Assimp
 ```bash
 sudo apt-get install libassimp-dev  
 ```
+**Continued in the the All Platforms section below.**
 
-Tensorflow >= 1.6  
-OpenCV >= 3.1
+### Windows
+#### GLFW
+*Download from https://www.glfw.org/*
+Tested with Version 3.3.3 (https://github.com/glfw/glfw/releases/download/3.3.3/glfw-3.3.3.zip)
 
+*1. Unzip to a permanent location*
+*2. Set the GLFW_ROOT environment variable to the location where it was unzipped*
+*3. Install the pip package*
+   ```cmd
+   pip install --user cyglfw3
+   ```
+*4. Copy the file glfw3.dll from lib-vc2012 into the Python Lib\site-packages\cyglfw3 where cyglfw is installed.*
+*5. Add the lib-vc2012 directory to the PATH environment variable*
+
+#### Assimp
+*Install from: https://github.com/assimp/assimp/releases/tag/v4.1.0/*
+*Add the <Program Files>\Assimp\bin\x64 directory to the PATH environment variable*
+
+**Continued in the the All Platforms section below.**
+
+### All Platforms
+
+#### OpenCV >= 3.1
+    See https://pypi.org/project/opencv-python/ for GPU acceleration instructions.   
+    To install the CPU-only version:
+```bash
+pip install --user opencv-python
+```
+*Latest versions of dependencies:*
 ```bash
 pip install --user --pre --upgrade PyOpenGL PyOpenGL_accelerate
-pip install --user cython
-pip install --user cyglfw3
-pip install --user pyassimp==3.3
-pip install --user imgaug
-pip install --user progressbar
+pip install --user tensorflow cython cyglfw3 pyassimp==3.3 imgaug progressbar
+```
+*Exact versions of dependencies:*
+```bash
+pip install --user tensorflow==2.4.1 PyOpenGL==3.1.5 PyOpenGL_accelerate==3.1.5 cython==0.29.19 cyglfw3==3.1.0.2 pyassimp==3.3 imgaug==0.4.0 progressbar==2.5
 ```
 
 ### Headless Rendering
