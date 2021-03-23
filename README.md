@@ -72,7 +72,7 @@ Tested with Version 3.3.3 (https://github.com/glfw/glfw/releases/download/3.3.3/
 
 #### Assimp
 1) Download & Install the package from https://github.com/assimp/assimp/releases/tag/v4.1.0/  
-2) Add the <Program Files>\Assimp\bin\x64 directory to the PATH environment variable  
+2) Add the &lt;Program Files&gt;\Assimp\bin\x64 directory to the PATH environment variable  
 
 **Continued in the the All Platforms section below.**
 
