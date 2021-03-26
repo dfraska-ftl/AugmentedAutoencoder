@@ -74,6 +74,9 @@ Tested with Version 3.3.3 (https://github.com/glfw/glfw/releases/download/3.3.3/
 1) Download & Install the package from https://github.com/assimp/assimp/releases/tag/v4.1.0/  
 2) Add the &lt;Program Files&gt;\Assimp\bin\x64 directory to the PATH environment variable  
 
+### Troubleshooting
+If you run into the error "Unable to load numpy_formathandler accelerator from OpenGL_accelerate", replace numpy with numpy‑1.19.5+mkl‑cp38‑cp38‑win_amd64.whl from https://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy (run "pip install" on the whl). Match the value for cp38 to your Python version - i.e. cp38 is for Python 3.8.
+
 **Continued in the the All Platforms section below.**
 
 ### All Platforms
