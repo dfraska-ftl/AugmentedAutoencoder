@@ -1,5 +1,5 @@
 import cv2
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 import glob
 import imageio
@@ -28,9 +28,6 @@ from auto_pose.test.googledet_utils import label_map_util
 from auto_pose.test.googledet_utils.helper import FPS2, WebcamVideoStream, SessionWorker
 
 import time
-
-
-
 
 # helper function for split model
 def _node_name(n):
@@ -62,7 +59,7 @@ def load_frozenmodel():
         with tf.Session(graph=input_graph,config=config):
             if ssd_shape == 600:
                 shape = 7326
-                print 'ssd_shape = 600 :('
+                print('ssd_shape = 600 :(')
                 exit()
             else:
                 shape = 1917
@@ -134,17 +131,17 @@ def load_frozenmodel():
 def load_labelmap():
     print('> Loading label map')
     label_map = label_map_util.load_labelmap(label_path)
-    print label_map
+    print(label_map)
     categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=num_classes, use_display_name=True)
-    print categories
+    print(categories)
     category_index = label_map_util.create_category_index(categories)
-    print category_index
+    print(category_index)
     return category_index
 
 
 def detection(detection_graph, category_index, score, expand):
     print("> Building Graph")
-    print category_index
+    print(category_index)
     # Session Config: allow seperate GPU/CPU adressing and limit memory allocation
     config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=log_device)
     config.gpu_options.allow_growth=allow_memory_growth
@@ -372,64 +369,68 @@ def detection(detection_graph, category_index, score, expand):
 
 
 ## LOAD CONFIG PARAMS ##
-try:
-    with open("googledet_utils/googledet_config.yml", 'r') as ymlfile:
-        cfg = yaml.load(ymlfile)
-except:
-    print 'no config file found'
-    exit()
 
+def main():
+    try:
+        with open("googledet_utils/googledet_config.yml", 'r') as ymlfile:
+            cfg = yaml.load(ymlfile)
+    except:
+        print('no config file found')
+        exit()
+    
+    
+    video_input         = cfg['video_input']
+    visualize           = cfg['visualize']
+    vis_text            = cfg['vis_text']
+    width               = cfg['width']
+    height              = cfg['height']
+    fps_interval        = cfg['fps_interval']
+    allow_memory_growth = cfg['allow_memory_growth']
+    det_th              = cfg['det_th']
+    model_path          = cfg['model_path']
+    label_path          = cfg['label_path']
+    num_classes         = cfg['num_classes']
+    split_model         = cfg['split_model']
+    log_device          = cfg['log_device']
+    ssd_shape           = cfg['ssd_shape']
+    K_test              = cfg['K_test']
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("experiment_names", nargs='+',type=str)
+    parser.add_argument('-down', default=1, type=int)
+    parser.add_argument("-s", action='store_true', default=False)
+    
+    # parser.add_argument("-gt_bb", action='store_true', default=False)
+    arguments = parser.parse_args()
+    
+    workspace_path = os.environ.get('AE_WORKSPACE_PATH')
+    if workspace_path == None:
+        print('Please define a workspace path:')
+        print('export AE_WORKSPACE_PATH=/path/to/workspace')
+        exit(-1)
+    
+    
+    all_codebooks = []
+    all_train_args = []
+    model_paths = []
+    
+    K_test =  np.array(K_test).reshape(3,3)
+    K_down = K_test.copy()
+    if arguments.down > 1:
+        K_down[:2,:] = K_down[:2,:] / arguments.down
+    
+    aae_list = [full_name.pop() for full_name in [experiment_name.split('/') for experiment_name in arguments.experiment_names]]
+    color_dict = [(0,255,0),(0,0,255),(255,0,0),(255,255,0)] * 10
+    
+    graph, score, expand = load_frozenmodel()
+    category = load_labelmap()
+    
+    clas_k_map = {}
+    for _,val in category.iteritems():
+        if val['name'] in aae_list:
+            clas_k_map[int(val['id'])] = aae_list.index(val['name'])
+    
+    detection(graph, category, score, expand)
 
-video_input         = cfg['video_input']
-visualize           = cfg['visualize']
-vis_text            = cfg['vis_text']
-width               = cfg['width']
-height              = cfg['height']
-fps_interval        = cfg['fps_interval']
-allow_memory_growth = cfg['allow_memory_growth']
-det_th              = cfg['det_th']
-model_path          = cfg['model_path']
-label_path          = cfg['label_path']
-num_classes         = cfg['num_classes']
-split_model         = cfg['split_model']
-log_device          = cfg['log_device']
-ssd_shape           = cfg['ssd_shape']
-K_test              = cfg['K_test']
-
-parser = argparse.ArgumentParser()
-parser.add_argument("experiment_names", nargs='+',type=str)
-parser.add_argument('-down', default=1, type=int)
-parser.add_argument("-s", action='store_true', default=False)
-
-# parser.add_argument("-gt_bb", action='store_true', default=False)
-arguments = parser.parse_args()
-
-workspace_path = os.environ.get('AE_WORKSPACE_PATH')
-if workspace_path == None:
-    print 'Please define a workspace path:\n'
-    print 'export AE_WORKSPACE_PATH=/path/to/workspace\n'
-    exit(-1)
-
-
-all_codebooks = []
-all_train_args = []
-model_paths = []
-
-K_test =  np.array(K_test).reshape(3,3)
-K_down = K_test.copy()
-if arguments.down > 1:
-    K_down[:2,:] = K_down[:2,:] / arguments.down
-
-aae_list = [full_name.pop() for full_name in [experiment_name.split('/') for experiment_name in arguments.experiment_names]]
-color_dict = [(0,255,0),(0,0,255),(255,0,0),(255,255,0)] * 10
-
-graph, score, expand = load_frozenmodel()
-category = load_labelmap()
-
-clas_k_map = {}
-for _,val in category.iteritems():
-    if val['name'] in aae_list:
-        clas_k_map[int(val['id'])] = aae_list.index(val['name'])
-
-detection(graph, category, score, expand)
-
+if __name__ == '__main__':
+    main()

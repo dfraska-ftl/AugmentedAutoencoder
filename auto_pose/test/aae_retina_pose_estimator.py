@@ -12,7 +12,7 @@ from keras_retinanet.models.retinanet import __build_anchors as build_anchors
 from keras_retinanet.models.retinanet import AnchorParameters
 from keras_retinanet import layers
 from keras_retinanet.utils.image import preprocess_image, resize_image
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from keras.backend.tensorflow_backend import set_session
 
 
@@ -28,8 +28,8 @@ class AePoseEstimator:
         workspace_path = os.environ.get('AE_WORKSPACE_PATH')
 
         if workspace_path == None:
-            print 'Please define a workspace path:\n'
-            print 'export AE_WORKSPACE_PATH=/path/to/workspace\n'
+            print('Please define a workspace path:')
+            print('export AE_WORKSPACE_PATH=/path/to/workspace')
             exit(-1)
 
         self._camPose = test_args.getboolean('CAMERA','camPose')
@@ -73,7 +73,7 @@ class AePoseEstimator:
             log_dir = utils.get_log_dir(workspace_path,experiment_name,experiment_group)
             ckpt_dir = utils.get_checkpoint_dir(log_dir)
             train_cfg_file_path = utils.get_train_config_exp_file_path(log_dir, experiment_name)
-            print train_cfg_file_path
+            print(train_cfg_file_path)
             # train_cfg_file_path = utils.get_config_file_path(workspace_path, experiment_name, experiment_group)
             train_args = configparser.ConfigParser()
             train_args.read(train_cfg_file_path)
@@ -127,8 +127,8 @@ class AePoseEstimator:
         res_image, scale = resize_image(pre_image)
 
         batch_image = np.expand_dims(res_image, axis=0)
-        print batch_image.shape
-        print batch_image.dtype
+        print(batch_image.shape)
+        print(batch_image.dtype)
         boxes, scores, labels = self.detector.predict_on_batch(batch_image)
 
 
@@ -232,7 +232,7 @@ class AePoseEstimator:
                 H_est[:3,3] = t_est
 
             H_est[:3,:3] = R_est
-            print 'translation from camera: ',  H_est[:3,3]
+            print(f'translation from camera: {H_est[:3,3]}')
 
             if self._camPose:
                 H_est = np.dot(camPose, H_est)           
@@ -248,8 +248,8 @@ class AePoseEstimator:
         """ This is mostly copied fomr retinanet.py """
 
         backbone_name = test_args.get('DETECTOR','backbone')
-        print backbone_name
-        print test_args.get('DETECTOR','detector_model_path')
+        print(backbone_name)
+        print(test_args.get('DETECTOR','detector_model_path'))
         model = keras.models.load_model(
                 str(test_args.get('DETECTOR','detector_model_path')),
                 custom_objects=backbone(backbone_name).custom_objects
@@ -262,11 +262,11 @@ class AePoseEstimator:
 
         # we expect the anchors, regression and classification values as first
         # output
-        print len(model.outputs)
+        print(len(model.outputs))
         regression     = model.outputs[0]
         classification = model.outputs[1]
-        print classification.shape[1]
-        print regression.shape
+        print(classification.shape[1])
+        print(regression.shape)
 
         # "other" can be any additional output from custom submodels,
         # by default this will be []
