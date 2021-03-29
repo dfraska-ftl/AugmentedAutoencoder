@@ -43,8 +43,9 @@ Duration depending on Configuration and Hardware: ~3h per Object
 
 ## Requirements: Software
 
-Python 3.6+
-VOC training set mirror: https://pjreddie.com/media/files/VOCtrainval_11-May-2012.tar
+Python 3.6+  
+CUDA: https://developer.nvidia.com/cuda-downloads  
+VOC training set (mirror): https://pjreddie.com/media/files/VOCtrainval_11-May-2012.tar  
 
 ### Linux
 #### GLFW
