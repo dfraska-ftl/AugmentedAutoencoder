@@ -97,11 +97,11 @@ pip install --user opencv-python
 2a) Latest versions of dependencies:  
 ```bash
 pip install --user --pre --upgrade PyOpenGL PyOpenGL_accelerate
-pip install --user tensorflow cython cyglfw3 pyassimp==3.3 imgaug progressbar
+pip install --user tensorflow cython cyglfw3 pyassimp==3.3 imgaug progressbar tf_agents
 ```
 2b) Exact versions of dependencies:
 ```bash
-pip install --user tensorflow==2.4.1 PyOpenGL==3.1.5 PyOpenGL_accelerate==3.1.5 cython==0.29.19 cyglfw3==3.1.0.2 pyassimp==3.3 imgaug==0.4.0 progressbar==2.5
+pip install --user tensorflow==2.4.1 PyOpenGL==3.1.5 PyOpenGL_accelerate==3.1.5 cython==0.29.19 cyglfw3==3.1.0.2 pyassimp==3.3 imgaug==0.4.0 progressbar==2.5 tf_agents==0.7.1
 ```
 
 ### Headless Rendering
