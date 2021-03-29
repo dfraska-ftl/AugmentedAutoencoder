@@ -60,15 +60,20 @@ sudo apt-get install libassimp-dev
 ### Windows
 #### GLFW
 1) Download from https://www.glfw.org/  
-Tested with Version 3.3.3 (https://github.com/glfw/glfw/releases/download/3.3.3/glfw-3.3.3.zip)
+Tested with Version 3.3.3 (https://github.com/glfw/glfw/releases/download/3.3.3/glfw-3.3.3.bin.WIN64.zip)  
 2) Unzip to a permanent location  
 3) Set the GLFW_ROOT environment variable to the location where it was unzipped  
-4) Install the pip package  
+4) Install cython & wheel  
+ ```cmd
+   pip install --user cython wheel
+   ```
+5) Install the pip package  
    ```cmd
    pip install --user cyglfw3
    ```
-5) Copy the file glfw3.dll from lib-vc2012 into the Python Lib\site-packages\cyglfw3 where cyglfw is installed.  
-6) Add the lib-vc2012 directory to the PATH environment variable
+   If you get an error about missing Visual Studio build tools, you may need to install them through the Visual Studio installer.  
+6) Copy the file glfw3.dll from lib-vc2012 into the Python Lib\site-packages\cyglfw3 where cyglfw is installed.  
+7) Add the lib-vc2012 directory to the PATH environment variable  
 
 #### Assimp
 1) Download & Install the package from https://github.com/assimp/assimp/releases/tag/v4.1.0/  
