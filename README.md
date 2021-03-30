@@ -44,7 +44,8 @@ Duration depending on Configuration and Hardware: ~3h per Object
 ## Requirements: Software
 
 Python 3.6+  
-CUDA: https://developer.nvidia.com/cuda-downloads  
+CUDA 11.0: https://developer.nvidia.com/cuda-11.0-download-archive  
+cuDNN: https://developer.nvidia.com/rdp/cudnn-download  
 VOC training set (mirror): https://pjreddie.com/media/files/VOCtrainval_11-May-2012.tar  
 
 ### Linux
