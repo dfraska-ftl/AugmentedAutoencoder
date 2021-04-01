@@ -46,7 +46,7 @@ with tf.Session(config=config) as sess:
 
     for file in files:
         im = cv2.imread(file)
-        if im == None:
+        if im is None:
             print(f"Image failed to load ({file})")
             exit(1)
         im = cv2.resize(im,(128,128))
