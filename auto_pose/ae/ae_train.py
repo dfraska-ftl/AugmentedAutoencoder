@@ -101,7 +101,7 @@ def main():
     bar = progressbar.ProgressBar(maxval=num_iter,widgets=widgets)
 
 
-    gpu_options = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction = 0.9)
+    gpu_options = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction=0.8)
     config = tf.ConfigProto(gpu_options=gpu_options)
 
     with tf.Session(config=config) as sess:
