@@ -125,7 +125,6 @@ class Renderer(object):
 
             glNamedFramebufferDrawBuffers(self._fbo.id, 2, np.array( (GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1),dtype=np.uint32 ) )
 
-
         glNamedFramebufferReadBuffer(self._fbo.id, GL_COLOR_ATTACHMENT0)
         bgr_flipped = np.frombuffer( glReadPixels(0, 0, W, H, GL_BGR, GL_UNSIGNED_BYTE), dtype=np.uint8 ).reshape(H,W,3)
         bgr = np.flipud(bgr_flipped).copy()
@@ -179,10 +178,13 @@ class Renderer(object):
             depth = np.flipud(depth_flipped).copy()
 
             ys, xs = np.nonzero(depth > 0)
-            obj_bb = misc.calc_2d_bbox(xs, ys, (W,H))
-            bbs.append(obj_bb)
+            if not any(xs) or not any(ys):
+                print('Bounding box not found in depth buffer (is the model scale correct?)')
+            else:
+                obj_bb = misc.calc_2d_bbox(xs, ys, (W, H))
+                bbs.append(obj_bb)
 
-        glBindFramebuffer(GL_FRAMEBUFFER, self._fbo.id)
+        self._fbo.bind()
         glNamedFramebufferReadBuffer(self._fbo.id, GL_COLOR_ATTACHMENT0)
         bgr_flipped = np.frombuffer( glReadPixels(0, 0, W, H, GL_BGR, GL_UNSIGNED_BYTE), dtype=np.uint8 ).reshape(H,W,3)
         bgr = np.flipud(bgr_flipped).copy()

@@ -119,7 +119,7 @@ class Dataset(object):
         latents_classes_heart_rot[:, 5] = 16
 
         def latent_to_index(latents):
-          return np.dot(latents, latents_bases).astype(int)
+            return np.dot(latents, latents_bases).astype(int)
 
         indices_sampled = latent_to_index(latents_classes_heart_rot)
         imgs_sampled_rot = imgs[indices_sampled]
