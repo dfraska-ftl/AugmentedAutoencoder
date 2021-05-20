@@ -60,19 +60,22 @@ class Dataset(object):
     @lazy_property
     def renderer(self):
         from auto_pose.meshrenderer import meshrenderer, meshrenderer_phong
+        render_dims = list(map(int, eval(self._kw['render_dims'])))
         if self._kw['model'] == 'cad':
             renderer = meshrenderer.Renderer(
                [self._kw['model_path']],
                int(self._kw['antialiasing']),
                self.dataset_path,
-               float(self._kw['vertex_scale'])
+               float(self._kw['vertex_scale']),
+               max_fbo_width=render_dims[0], max_fbo_height=render_dims[1]
             )
         elif self._kw['model'] == 'reconst':
             renderer = meshrenderer_phong.Renderer(
                [self._kw['model_path']],
                int(self._kw['antialiasing']),
                self.dataset_path,
-               float(self._kw['vertex_scale'])
+               float(self._kw['vertex_scale']),
+               max_fbo_width=render_dims[0], max_fbo_height=render_dims[1]
             )
         else:
             'Error: neither cad nor reconst in model path!'
