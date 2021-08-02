@@ -12,7 +12,7 @@ from keras_retinanet.models.retinanet import __build_anchors as build_anchors
 from keras_retinanet.models.retinanet import AnchorParameters
 from keras_retinanet import layers
 from keras_retinanet.utils.image import preprocess_image, resize_image
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf1
 from keras.backend.tensorflow_backend import set_session
 
 

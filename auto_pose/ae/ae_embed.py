@@ -5,13 +5,13 @@ import argparse
 import numpy as np
 import signal
 import progressbar
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf1
 
 from auto_pose.ae import ae_factory as factory
 from auto_pose.ae import utils as u
 
 def main():
-    tf.disable_eager_execution()
+    tf1.disable_eager_execution()
     
     workspace_path = os.environ.get('AE_WORKSPACE_PATH')
 
@@ -48,29 +48,29 @@ def main():
     args = configparser.ConfigParser()
     args.read(cfg_file_path)
 
-    with tf.variable_scope(experiment_name):
+    with tf1.variable_scope(experiment_name):
         dataset = factory.build_dataset(dataset_path, args)
         queue = factory.build_queue(dataset, args)
         encoder = factory.build_encoder(queue.x, args)
         decoder = factory.build_decoder(queue.y, encoder, args)
         ae = factory.build_ae(encoder, decoder, args)
         codebook = factory.build_codebook(encoder, dataset, args)
-        saver = tf.train.Saver(save_relative_paths=True)
+        saver = tf1.train.Saver(save_relative_paths=True)
 
     batch_size = args.getint('Training', 'BATCH_SIZE')
     model = args.get('Dataset', 'MODEL')
 
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.7)
-    config = tf.ConfigProto(gpu_options=gpu_options)
+    gpu_options = tf1.GPUOptions(per_process_gpu_memory_fraction=0.7)
+    config = tf1.ConfigProto(gpu_options=gpu_options)
 
-    with tf.Session(config=config) as sess:
+    with tf1.Session(config=config) as sess:
 
         print(ckpt_dir)
         print('#'*20)
 
         factory.restore_checkpoint(sess, saver, ckpt_dir, at_step=at_step)
 
-        # chkpt = tf.train.get_checkpoint_state(ckpt_dir)
+        # chkpt = tf1.train.get_checkpoint_state(ckpt_dir)
         # if chkpt and chkpt.model_checkpoint_path:
         #     print chkpt.model_checkpoint_path
         #     saver.restore(sess, chkpt.model_checkpoint_path)

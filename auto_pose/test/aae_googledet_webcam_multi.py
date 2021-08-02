@@ -1,5 +1,5 @@
 import cv2
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf1
 import numpy as np
 import glob
 import imageio
@@ -39,42 +39,42 @@ def _node_name(n):
 # Load a (frozen) Tensorflow model into memory.
 def load_frozenmodel():
     print('> Loading frozen model into memory')
-    config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=log_device)
+    config = tf1.ConfigProto(allow_soft_placement=True, log_device_placement=log_device)
     config.gpu_options.allow_growth=allow_memory_growth
     config.gpu_options.per_process_gpu_memory_fraction = 0.5 ###Jetson only
     if not split_model:
-        detection_graph = tf.Graph()
+        detection_graph = tf1.Graph()
         with detection_graph.as_default():
-          od_graph_def = tf.GraphDef()
-          with tf.gfile.GFile(model_path, 'rb') as fid:
+          od_graph_def = tf1.GraphDef()
+          with tf1.gfile.GFile(model_path, 'rb') as fid:
             serialized_graph = fid.read()
             od_graph_def.ParseFromString(serialized_graph)
-            tf.import_graph_def(od_graph_def, name='')
+            tf1.import_graph_def(od_graph_def, name='')
         return detection_graph, None, None
 
     else:
         # load a frozen Model and split it into GPU and CPU graphs
         # Hardcoded for ssd_mobilenet
-        input_graph = tf.Graph()
-        with tf.Session(graph=input_graph,config=config):
+        input_graph = tf1.Graph()
+        with tf1.Session(graph=input_graph,config=config):
             if ssd_shape == 600:
                 shape = 7326
                 print('ssd_shape = 600 :(')
                 exit()
             else:
                 shape = 1917
-            score = tf.placeholder(tf.float32, shape=(None, shape, num_classes), name="Postprocessor/convert_scores")
-            expand = tf.placeholder(tf.float32, shape=(None, shape, 1, 4), name="Postprocessor/ExpandDims_1")
+            score = tf1.placeholder(tf1.float32, shape=(None, shape, num_classes), name="Postprocessor/convert_scores")
+            expand = tf1.placeholder(tf1.float32, shape=(None, shape, 1, 4), name="Postprocessor/ExpandDims_1")
             for node in input_graph.as_graph_def().node:
                 if node.name == "Postprocessor/convert_scores":
                     score_def = node
                 if node.name == "Postprocessor/ExpandDims_1":
                     expand_def = node
 
-        detection_graph = tf.Graph()
+        detection_graph = tf1.Graph()
         with detection_graph.as_default():
-            od_graph_def = tf.GraphDef()
-            with tf.gfile.GFile(model_path, 'rb') as fid:
+            od_graph_def = tf1.GraphDef()
+            with tf1.gfile.GFile(model_path, 'rb') as fid:
                 serialized_graph = fid.read()
                 od_graph_def.ParseFromString(serialized_graph)
                 dest_nodes = ['Postprocessor/convert_scores','Postprocessor/ExpandDims_1']
@@ -120,10 +120,10 @@ def load_frozenmodel():
                 for n in nodes_to_remove_list:
                     remove.node.extend([copy.deepcopy(name_to_node_map[n])])
     
-                with tf.device('/gpu:0'):
-                    tf.import_graph_def(keep, name='')
-                with tf.device('/cpu:0'):
-                    tf.import_graph_def(remove, name='')
+                with tf1.device('/gpu:0'):
+                    tf1.import_graph_def(keep, name='')
+                with tf1.device('/cpu:0'):
+                    tf1.import_graph_def(remove, name='')
 
         return detection_graph, score, expand
 
@@ -143,13 +143,13 @@ def detection(detection_graph, category_index, score, expand):
     print("> Building Graph")
     print(category_index)
     # Session Config: allow seperate GPU/CPU adressing and limit memory allocation
-    config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=log_device)
+    config = tf1.ConfigProto(allow_soft_placement=True, log_device_placement=log_device)
     config.gpu_options.allow_growth=allow_memory_growth
     config.gpu_options.per_process_gpu_memory_fraction = 0.4  ###Jetson only
     cur_frames = 0
     with detection_graph.as_default():
-        #run_meta = tf.RunMetadata()
-        with tf.Session(graph=detection_graph,config=config) as sess:
+        #run_meta = tf1.RunMetadata()
+        with tf1.Session(graph=detection_graph,config=config) as sess:
             # Define Input and Ouput tensors
             image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
             detection_boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
@@ -186,11 +186,11 @@ def detection(detection_graph, category_index, score, expand):
                 ckpt_dir = utils.get_checkpoint_dir(log_dir)
 
                 all_codebooks.append(factory.build_codebook_from_name(experiment_name, experiment_group, return_dataset=False))
-                factory.restore_checkpoint(sess, tf.train.Saver(var_list=tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=experiment_name)), ckpt_dir)
+                factory.restore_checkpoint(sess, tf1.train.Saver(var_list=tf1.get_collection(tf1.GraphKeys.GLOBAL_VARIABLES, scope=experiment_name)), ckpt_dir)
             
             
-            #opts = tf.profiler.ProfileOptionBuilder.float_operation()    
-            #flops = tf.profiler.profile(sess.graph, run_meta=run_meta, cmd='op', options=opts)
+            #opts = tf1.profiler.ProfileOptionBuilder.float_operation()    
+            #flops = tf1.profiler.profile(sess.graph, run_meta=run_meta, cmd='op', options=opts)
             #exit()
             # i_class_mapping = {v: k for k, v in class_i_mapping.iteritems()}
             renderer = meshrenderer_phong.Renderer(

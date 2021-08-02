@@ -2,7 +2,7 @@
 
 import numpy as np
 
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf1
 
 from .utils import lazy_property
 
@@ -37,49 +37,49 @@ class Decoder(object):
         print(h,w,c)
         layer_dimensions = [ [int(h/np.prod(self._strides[i:])), int(w/np.prod(self._strides[i:]))]  for i in range(len(self._strides))]
         print(layer_dimensions)
-        x = tf.layers.dense(
+        x = tf1.layers.dense(
             inputs=self._latent_code,
             units= layer_dimensions[0][0]*layer_dimensions[0][1]*self._num_filters[0],
-            activation=tf.nn.relu,
-            kernel_initializer=tf.initializers.glorot_uniform()
+            activation=tf1.nn.relu,
+            kernel_initializer=tf1.initializers.glorot_uniform()
         )
         if self._batch_normalization:
-            x = tf.layers.batch_normalization(x, training=self._is_training)
-        x = tf.reshape( x, [-1, layer_dimensions[0][0], layer_dimensions[0][1], self._num_filters[0] ] )
+            x = tf1.layers.batch_normalization(x, training=self._is_training)
+        x = tf1.reshape( x, [-1, layer_dimensions[0][0], layer_dimensions[0][1], self._num_filters[0] ] )
 
         for filters, layer_size in zip(self._num_filters[1:], layer_dimensions[1:]):
-            x = tf.image.resize_nearest_neighbor(x, layer_size)
+            x = tf1.image.resize_nearest_neighbor(x, layer_size)
 
-            x = tf.layers.conv2d(
+            x = tf1.layers.conv2d(
                 inputs=x,
                 filters=filters,
                 kernel_size=self._kernel_size,
                 padding='same',
-                kernel_initializer=tf.initializers.glorot_normal(),
-                activation=tf.nn.relu
+                kernel_initializer=tf1.initializers.glorot_normal(),
+                activation=tf1.nn.relu
             )
             if self._batch_normalization:
-                x = tf.layers.batch_normalization(x, training=self._is_training)
+                x = tf1.layers.batch_normalization(x, training=self._is_training)
         
-        x = tf.image.resize_nearest_neighbor( x, [h, w] )
+        x = tf1.image.resize_nearest_neighbor( x, [h, w] )
 
         if self._auxiliary_mask:
-            self._xmask = tf.layers.conv2d(
+            self._xmask = tf1.layers.conv2d(
                     inputs=x,
                     filters=1,
                     kernel_size=self._kernel_size,
                     padding='same',
-                    kernel_initializer=tf.initializers.glorot_normal(),
-                    activation=tf.nn.sigmoid
+                    kernel_initializer=tf1.initializers.glorot_normal(),
+                    activation=tf1.nn.sigmoid
                 )
 
-        x = tf.layers.conv2d(
+        x = tf1.layers.conv2d(
                 inputs=x,
                 filters=c,
                 kernel_size=self._kernel_size,
                 padding='same',
-                kernel_initializer=tf.initializers.glorot_normal(),
-                activation=tf.nn.sigmoid
+                kernel_initializer=tf1.initializers.glorot_normal(),
+                activation=tf1.nn.sigmoid
             )
         return x
 
@@ -90,50 +90,50 @@ class Decoder(object):
         if self._loss == 'L2':
             if self._bootstrap_ratio > 1:
 
-                x_flat = tf.layers.flatten(self.x)
-                reconstruction_target_flat = tf.layers.flatten(self._reconstruction_target)
-                l2 = tf.losses.mean_squared_error (
+                x_flat = tf1.layers.flatten(self.x)
+                reconstruction_target_flat = tf1.layers.flatten(self._reconstruction_target)
+                l2 = tf1.losses.mean_squared_error (
                     reconstruction_target_flat,
                     x_flat,
-                    reduction=tf.losses.Reduction.NONE
+                    reduction=tf1.losses.Reduction.NONE
                 )
-                l2_val,_ = tf.nn.top_k(l2,k=l2.shape[1]//self._bootstrap_ratio)
-                loss = tf.reduce_mean(l2_val)
+                l2_val,_ = tf1.nn.top_k(l2,k=l2.shape[1]//self._bootstrap_ratio)
+                loss = tf1.reduce_mean(l2_val)
             else:
-                loss = tf.losses.mean_squared_error (
+                loss = tf1.losses.mean_squared_error (
                     self._reconstruction_target,
                     self.x,
-                    reduction=tf.losses.Reduction.MEAN
+                    reduction=tf1.losses.Reduction.MEAN
                 )
         elif self._loss == 'L1':
             if self._bootstrap_ratio > 1:
 
-                x_flat = tf.layers.flatten(self.x)
-                reconstruction_target_flat = tf.layers.flatten(self._reconstruction_target)
-                l1 = tf.losses.absolute_difference(
+                x_flat = tf1.layers.flatten(self.x)
+                reconstruction_target_flat = tf1.layers.flatten(self._reconstruction_target)
+                l1 = tf1.losses.absolute_difference(
                     reconstruction_target_flat,
                     x_flat,
-                    reduction=tf.losses.Reduction.NONE
+                    reduction=tf1.losses.Reduction.NONE
                 )
                 print(l1.shape)
-                l1_val,_ = tf.nn.top_k(l1,k=l1.shape[1]/self._bootstrap_ratio)
-                loss = tf.reduce_mean(l1_val)
+                l1_val,_ = tf1.nn.top_k(l1,k=l1.shape[1]/self._bootstrap_ratio)
+                loss = tf1.reduce_mean(l1_val)
             else:
-                x_flat = tf.layers.flatten(self.x)
-                reconstruction_target_flat = tf.layers.flatten(self._reconstruction_target)
-                l1 = tf.losses.absolute_difference(
+                x_flat = tf1.layers.flatten(self.x)
+                reconstruction_target_flat = tf1.layers.flatten(self._reconstruction_target)
+                l1 = tf1.losses.absolute_difference(
                     reconstruction_target_flat,
                     x_flat,
-                    reduction=tf.losses.Reduction.MEAN
+                    reduction=tf1.losses.Reduction.MEAN
                 )
         else:
             print('ERROR: UNKNOWN LOSS ', self._loss)
             exit()
         
-        tf.summary.scalar('reconst_loss', loss)
+        tf1.summary.scalar('reconst_loss', loss)
         if self._auxiliary_mask:
-            mask_loss = tf.losses.mean_squared_error (
-                tf.cast(tf.greater(tf.reduce_sum(self._reconstruction_target,axis=3,keepdims=True),0.0001),tf.float32),
+            mask_loss = tf1.losses.mean_squared_error (
+                tf1.cast(tf.greater(tf.reduce_sum(self._reconstruction_target,axis=3,keepdims=True),0.0001),tf.float32),
                 self._xmask,
                 reduction=tf.losses.Reduction.MEAN
             )

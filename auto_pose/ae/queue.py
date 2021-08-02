@@ -2,7 +2,7 @@
 
 import threading
 
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf1
 
 from auto_pose.ae.utils import lazy_property
 import time
@@ -21,22 +21,22 @@ class Queue(object):
         batch_shape = [None]+list(self._dataset.shape)
         
         self._placeholders = 2*[
-            tf.placeholder(dtype=tf.float32, shape=batch_shape),
-            tf.placeholder(dtype=tf.float32, shape=batch_shape) 
+            tf1.placeholder(dtype=tf1.float32, shape=batch_shape),
+            tf1.placeholder(dtype=tf1.float32, shape=batch_shape) 
         ]
 
-        self._queue = tf.FIFOQueue(self._queue_size, datatypes, shapes=shapes)
+        self._queue = tf1.FIFOQueue(self._queue_size, datatypes, shapes=shapes)
         self.x, self.y = self._queue.dequeue_up_to(self._batch_size)
         self.enqueue_op = self._queue.enqueue_many(self._placeholders)
 
-        self._coordinator = tf.train.Coordinator()
+        self._coordinator = tf1.train.Coordinator()
 
         self._threads = []
 
 
     def start(self, session):
         assert len(self._threads) == 0
-        tf.train.start_queue_runners(session, self._coordinator)
+        tf1.train.start_queue_runners(session, self._coordinator)
         for _ in range(self._num_threads):
             thread = threading.Thread(
                         target=Queue.__run__, 
@@ -65,7 +65,7 @@ class Queue(object):
             try:
                 session.run(self.enqueue_op, feed_dict)
                 # print 'enqueued something'
-            except tf.errors.CancelledError as e:
+            except tf1.errors.CancelledError as e:
                 print('worker was cancelled')
                 pass
             

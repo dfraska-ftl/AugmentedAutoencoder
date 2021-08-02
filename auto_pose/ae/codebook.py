@@ -2,7 +2,7 @@
 
 import numpy as np
 
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf1
 import progressbar
 
 from .utils import lazy_property
@@ -20,31 +20,31 @@ class Codebook(object):
         J = encoder.latent_space_size
         embedding_size = self._dataset.embedding_size
 
-        self.normalized_embedding_query = tf.nn.l2_normalize(self._encoder.z, 1)
-        self.embedding_normalized = tf.Variable(
+        self.normalized_embedding_query = tf1.nn.l2_normalize(self._encoder.z, 1)
+        self.embedding_normalized = tf1.Variable(
             np.zeros((embedding_size, J)),
-            dtype=tf.float32,
+            dtype=tf1.float32,
             trainable=False,
             name='embedding_normalized'
         )
 
-        self.embedding = tf.placeholder(tf.float32, shape=[embedding_size, J])
-        self.embedding_assign_op = tf.assign(self.embedding_normalized, self.embedding)
+        self.embedding = tf1.placeholder(tf1.float32, shape=[embedding_size, J])
+        self.embedding_assign_op = tf1.assign(self.embedding_normalized, self.embedding)
         
 
         if embed_bb:
-            self.embed_obj_bbs_var = tf.Variable(
+            self.embed_obj_bbs_var = tf1.Variable(
                 np.zeros((embedding_size, 4)),
-                dtype=tf.int32,
+                dtype=tf1.int32,
                 trainable=False,
                 name='embed_obj_bbs_var'
             )
-            self.embed_obj_bbs = tf.placeholder(tf.int32, shape=[embedding_size, 4])
-            self.embed_obj_bbs_assign_op = tf.assign(self.embed_obj_bbs_var, self.embed_obj_bbs)
+            self.embed_obj_bbs = tf1.placeholder(tf1.int32, shape=[embedding_size, 4])
+            self.embed_obj_bbs_assign_op = tf1.assign(self.embed_obj_bbs_var, self.embed_obj_bbs)
             self.embed_obj_bbs_values = None
         
-        self.cos_similarity = tf.matmul(self.normalized_embedding_query, self.embedding_normalized,transpose_b=True)
-        self.nearest_neighbor_idx = tf.argmax(self.cos_similarity, axis=1)
+        self.cos_similarity = tf1.matmul(self.normalized_embedding_query, self.embedding_normalized,transpose_b=True)
+        self.nearest_neighbor_idx = tf1.argmax(self.cos_similarity, axis=1)
 
 
 

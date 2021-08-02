@@ -1,5 +1,5 @@
 import cv2
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf1
 import numpy as np
 import glob
 import os
@@ -9,7 +9,7 @@ import configparser
 
 from auto_pose.ae import factory, utils
 
-tf.disable_eager_execution()
+tf1.disable_eager_execution()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("experiment_name")
@@ -36,13 +36,13 @@ ckpt_dir = utils.get_checkpoint_dir(log_dir)
 
 codebook, dataset = factory.build_codebook_from_name(experiment_name, experiment_group, return_dataset=True)
 
-gpu_options = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction = 0.9)
-config = tf.ConfigProto(gpu_options=gpu_options)
+gpu_options = tf1.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction = 0.9)
+config = tf1.ConfigProto(gpu_options=gpu_options)
 config.gpu_options.allow_growth = True
 
-with tf.Session(config=config) as sess:
+with tf1.Session(config=config) as sess:
 
-    factory.restore_checkpoint(sess, tf.train.Saver(), ckpt_dir)
+    factory.restore_checkpoint(sess, tf1.train.Saver(), ckpt_dir)
 
     for file in files:
         im = cv2.imread(file)

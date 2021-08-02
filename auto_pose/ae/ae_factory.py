@@ -80,8 +80,8 @@ def build_train_op(ae, args):
     LEARNING_RATE = args.getfloat('Training', 'LEARNING_RATE')
     OPTIMIZER_NAME = args.get('Training', 'OPTIMIZER')
     import tf_agents
-    import tensorflow.compat.v1 as tf
-    optimizer = eval(f'tf.train.{OPTIMIZER_NAME}Optimizer')
+    import tensorflow.compat.v1 as tf1
+    optimizer = eval(f'tf1.train.{OPTIMIZER_NAME}Optimizer')
     optim = optimizer(LEARNING_RATE)
 
     train_op = tf_agents.utils.eager_utils.create_train_op(ae.loss, optim, global_step=ae.global_step)
@@ -104,7 +104,7 @@ def build_codebook_from_name(experiment_name, experiment_group='', return_datase
         exit(-1)
 
     from . import utils as u
-    import tensorflow.compat.v1 as tf
+    import tensorflow.compat.v1 as tf1
 
     log_dir = u.get_log_dir(workspace_path, experiment_name, experiment_group)
     checkpoint_file = u.get_checkpoint_basefilename(log_dir)
@@ -118,13 +118,13 @@ def build_codebook_from_name(experiment_name, experiment_group='', return_datase
         print('ERROR: Config File not found: ', cfg_file_path)
         exit()
 
-    with tf.variable_scope(experiment_name):
+    with tf1.variable_scope(experiment_name):
         dataset = build_dataset(dataset_path, args)
-        x = tf.placeholder(tf.float32, [None,] + list(dataset.shape))
+        x = tf1.placeholder(tf1.float32, [None,] + list(dataset.shape))
         encoder = build_encoder(x, args)
         codebook = build_codebook(encoder, dataset, args)
         if return_decoder:
-            reconst_target = tf.placeholder(tf.float32, [None,] + list(dataset.shape))
+            reconst_target = tf1.placeholder(tf1.float32, [None,] + list(dataset.shape))
             decoder = build_decoder(reconst_target, encoder, args)
 
     if return_dataset:
@@ -141,7 +141,7 @@ def restore_checkpoint(session, saver, ckpt_dir, at_step=None):
     import tensorflow as tf
     import os
 
-    chkpt = tf.train.get_checkpoint_state(ckpt_dir)
+    chkpt = tf1.train.get_checkpoint_state(ckpt_dir)
 
     if chkpt and chkpt.model_checkpoint_path:
         if at_step is None:

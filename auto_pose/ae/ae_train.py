@@ -9,14 +9,14 @@ import cv2
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import progressbar
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf1
 
 from auto_pose.ae import ae_factory as factory
 from auto_pose.ae import utils as u
 
 
 def main():
-    tf.disable_eager_execution()
+    tf1.disable_eager_execution()
     
     workspace_path = os.environ.get('AE_WORKSPACE_PATH')
 
@@ -69,7 +69,7 @@ def main():
 
     shutil.copy2(cfg_file_path, log_dir)
 
-    with tf.variable_scope(experiment_name):
+    with tf1.variable_scope(experiment_name):
         dataset = factory.build_dataset(dataset_path, args)
         queue = factory.build_queue(dataset, args)
         encoder = factory.build_encoder(queue.x, args, is_training=True)
@@ -77,7 +77,7 @@ def main():
         ae = factory.build_ae(encoder, decoder, args)
         codebook = factory.build_codebook(encoder, dataset, args)
         train_op = factory.build_train_op(ae, args)
-        saver = tf.train.Saver(save_relative_paths=True)
+        saver = tf1.train.Saver(save_relative_paths=True)
 
     num_iter = args.getint('Training', 'NUM_ITER') if not debug_mode else 100000
     save_interval = args.getint('Training', 'SAVE_INTERVAL')
@@ -101,19 +101,19 @@ def main():
     bar = progressbar.ProgressBar(maxval=num_iter,widgets=widgets)
 
 
-    gpu_options = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction=0.8)
-    config = tf.ConfigProto(gpu_options=gpu_options)
+    gpu_options = tf1.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction=0.8)
+    config = tf1.ConfigProto(gpu_options=gpu_options)
 
-    with tf.Session(config=config) as sess:
+    with tf1.Session(config=config) as sess:
 
-        chkpt = tf.train.get_checkpoint_state(ckpt_dir)
+        chkpt = tf1.train.get_checkpoint_state(ckpt_dir)
         if chkpt and chkpt.model_checkpoint_path:
             saver.restore(sess, chkpt.model_checkpoint_path)
         else:
-            sess.run(tf.global_variables_initializer())
+            sess.run(tf1.global_variables_initializer())
 
-        merged_loss_summary = tf.summary.merge_all()
-        summary_writer = tf.summary.FileWriter(ckpt_dir, sess.graph)
+        merged_loss_summary = tf1.summary.merge_all()
+        summary_writer = tf1.summary.FileWriter(ckpt_dir, sess.graph)
 
 
         if not debug_mode:

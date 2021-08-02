@@ -1,6 +1,6 @@
 import cv2
 import argparse
-import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1 as tf1
 import numpy as np
 import os
 import configparser
