@@ -10,7 +10,7 @@ from auto_pose.ae import utils as u
 from webcam_video_stream import WebcamVideoStream
 
 def main():
-    tf.disable_eager_execution()
+    tf1.disable_eager_execution()
     
     parser = argparse.ArgumentParser()
     parser.add_argument("experiment_name")
@@ -35,12 +35,12 @@ def main():
     height = 720
     videoStream = WebcamVideoStream(0,width,height).start()
     
-    gpu_options = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction = 0.9)
-    config = tf.ConfigProto(gpu_options=gpu_options)
+    gpu_options = tf1.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction = 0.9)
+    config = tf1.ConfigProto(gpu_options=gpu_options)
     config.gpu_options.allow_growth = True
     
-    with tf.Session(config=config) as sess:
-        factory.restore_checkpoint(sess, tf.train.Saver(), ckpt_dir)
+    with tf1.Session(config=config) as sess:
+        factory.restore_checkpoint(sess, tf1.train.Saver(), ckpt_dir)
     
         while videoStream.isActive():
             image = videoStream.read()

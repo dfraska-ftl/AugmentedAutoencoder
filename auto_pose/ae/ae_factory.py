@@ -141,7 +141,7 @@ def restore_checkpoint(session, saver, ckpt_dir, at_step=None):
     import tensorflow as tf
     import os
 
-    chkpt = tf1.train.get_checkpoint_state(ckpt_dir)
+    chkpt = tf.train.get_checkpoint_state(ckpt_dir)
 
     if chkpt and chkpt.model_checkpoint_path:
         if at_step is None:

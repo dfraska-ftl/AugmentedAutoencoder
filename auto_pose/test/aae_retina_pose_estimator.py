@@ -54,11 +54,11 @@ class AePoseEstimator:
         self.pad_factors = []
         self.patch_sizes = []
 
-        config = tf.ConfigProto(allow_soft_placement=True)
+        config = tf1.ConfigProto(allow_soft_placement=True)
         config.gpu_options.allow_growth=True
         config.gpu_options.per_process_gpu_memory_fraction = test_args.getfloat('MODEL','gpu_memory_fraction')
 
-        self.sess = tf.Session(config=config)
+        self.sess = tf1.Session(config=config)
         set_session(self.sess)
         self.detector = load_model(str(test_args.get('DETECTOR','detector_model_path')), 
                             backbone_name=test_args.get('DETECTOR','backbone'))
@@ -82,7 +82,7 @@ class AePoseEstimator:
             self.patch_sizes.append((train_args.getint('Dataset','W'), train_args.getint('Dataset','H')))
 
             self.all_codebooks.append(factory.build_codebook_from_name(experiment_name, experiment_group, return_dataset=False))
-            saver = tf.train.Saver(var_list=tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=experiment_name))
+            saver = tf1.train.Saver(var_list=tf1.get_collection(tf1.GraphKeys.GLOBAL_VARIABLES, scope=experiment_name))
             factory.restore_checkpoint(self.sess, saver, ckpt_dir)
 
 
