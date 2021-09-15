@@ -46,7 +46,7 @@ def load_meshes(obj_files, vertex_tmp_store_folder, recalculate_normals=False):
 
     out_file = os.path.join( vertex_tmp_store_folder, hashed_file_name)
     if os.path.exists(out_file):
-        return np.load(out_file)
+        return np.load(out_file, allow_pickle=True)
     else:
         bar = progressbar.ProgressBar()
         attributes = []
@@ -61,6 +61,8 @@ def load_meshes(obj_files, vertex_tmp_store_folder, recalculate_normals=False):
             normals = calc_normals(vertices) if recalculate_normals else mesh.normals
             attributes.append( (vertices, normals) )
             pyassimp.release(scene)
+        if not os.path.exists(vertex_tmp_store_folder):
+            os.makedirs(vertex_tmp_store_folder)
         np.save(out_file, attributes)
         return attributes
 
