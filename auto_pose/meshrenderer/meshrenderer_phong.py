@@ -9,16 +9,15 @@ from . import gl_utils as gu
 from .pysixd import misc
 
 class Renderer(object):
-
-    MAX_FBO_WIDTH = 2000
-    MAX_FBO_HEIGHT = 2000
-
-    def __init__(self, models_cad_files, samples=1, vertex_tmp_store_folder='.', clamp=False, vertex_scale=1.0):
+    def __init__(self, models_cad_files, samples=1, vertex_tmp_store_folder='.', clamp=False, vertex_scale=1.0,
+                 max_fbo_width=2000, max_fbo_height=2000):
         self._samples = samples
         self._context = gu.OffscreenContext()
+        self._max_fbo_width = max_fbo_width
+        self._max_fbo_height = max_fbo_height
 
         # FBO
-        W, H = Renderer.MAX_FBO_WIDTH, Renderer.MAX_FBO_HEIGHT
+        W, H = max_fbo_width, max_fbo_height
         self._fbo = gu.Framebuffer( { GL_COLOR_ATTACHMENT0: gu.Texture(GL_TEXTURE_2D, 1, GL_RGB8, W, H),
                                       GL_COLOR_ATTACHMENT1: gu.Texture(GL_TEXTURE_2D, 1, GL_R32F, W, H),
                                       GL_DEPTH_ATTACHMENT: gu.Renderbuffer(GL_DEPTH_COMPONENT32F, W, H) } )
@@ -99,7 +98,7 @@ class Renderer(object):
 
 
     def render(self, obj_id, W, H, K, R, t, near, far, random_light=False, phong={'ambient':0.4,'diffuse':0.8, 'specular':0.3}):
-        assert W <= Renderer.MAX_FBO_WIDTH and H <= Renderer.MAX_FBO_HEIGHT
+        assert W <= self._max_fbo_width and H <= self._max_fbo_height
         W = int(W)
         H = int(H)
 
@@ -168,7 +167,7 @@ class Renderer(object):
         return bgr, depth
 
     def render_many(self, obj_ids, W, H, K, Rs, ts, near, far, random_light=True, phong={'ambient':0.4,'diffuse':0.8, 'specular':0.3}):
-        assert W <= Renderer.MAX_FBO_WIDTH and H <= Renderer.MAX_FBO_HEIGHT
+        assert W <= self._max_fbo_width and H <= self._max_fbo_height
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glViewport(0, 0, W, H)
