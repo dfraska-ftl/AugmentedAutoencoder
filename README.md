@@ -119,10 +119,14 @@ In order to make the EGL context work, you might need to change PyOpenGL like [h
 pip install --user .
 ```
 
-2) Set Workspace path, consider to put this into your bash profile, will always be required
+2) Set Workspace path
+### Linux:
+Consider adding this to your bash profile
 ```bash
 export AE_WORKSPACE_PATH=/path/to/autoencoder_ws  
 ```
+### Windows:
+   Edit your system environment variables to add the AE_WORKSPACE_PATH variable which points to the location where you want to store training results and configurations for AugmentedAutoencoder
 
 3) Create Workspace, Init Workspace (if installed locally, make sure .local/bin/ is in your PATH)
 ```bash
@@ -130,7 +134,7 @@ mkdir $AE_WORKSPACE_PATH
 cd $AE_WORKSPACE_PATH
 ae_init_workspace
 ```
-
+   
 ## Train an Augmented Autoencoder
 
 1) Create the training config file. Insert the paths to your 3D model and background images.
